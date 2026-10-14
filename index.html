@@ -1,8 +1,381 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Smart Blind Stick | GPS Tracker</title>
-<link rel="stylesheet" href="
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Blind Stick | GPS Tracker</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #07111f;
+      color: #edf5ff;
+      line-height: 1.6;
+    }
+
+    header {
+      padding: 22px 7%;
+      background: #0b192b;
+      border-bottom: 1px solid #20334d;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .logo {
+      color: #53c8ff;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .tag {
+      color: #b9c8da;
+      font-size: 13px;
+    }
+
+    .hero {
+      padding: 55px 7% 35px;
+      background: linear-gradient(135deg, #102b49, #07111f);
+    }
+
+    .hero small {
+      color: #53c8ff;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      line-height: 1.2;
+      margin: 14px 0;
+    }
+
+    .hero p {
+      color: #b9c8da;
+      max-width: 650px;
+    }
+
+    main {
+      padding: 30px 7% 60px;
+    }
+
+    .section-title {
+      margin: 28px 0 16px;
+      font-size: 22px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #101f32;
+      border: 1px solid #243b55;
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .card-label {
+      color: #a9bbd0;
+      font-size: 14px;
+    }
+
+    .card-value {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 9px;
+      overflow-wrap: anywhere;
+    }
+
+    .blue {
+      color: #53c8ff;
+    }
+
+    .green {
+      color: #57e6a2;
+    }
+
+    .map-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 290px;
+      gap: 18px;
+      margin-top: 16px;
+    }
+
+    #map {
+      height: 400px;
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid #243b55;
+      z-index: 1;
+      background: #dbeafe;
+    }
+
+    .controls {
+      background: #101f32;
+      border: 1px solid #243b55;
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    label {
+      display: block;
+      color: #b9c8da;
+      margin: 14px 0 6px;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #354b65;
+      background: #07111f;
+      color: white;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #159be8;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #087fc4;
+    }
+
+    button.secondary {
+      background: #20334d;
+      border: 1px solid #354b65;
+    }
+
+    .notice {
+      margin-top: 16px;
+      padding: 14px;
+      background: #302817;
+      border: 1px solid #78602c;
+      border-radius: 10px;
+      color: #ffe4a3;
+      font-size: 13px;
+    }
+
+    .about {
+      margin-top: 30px;
+      background: #101f32;
+      border: 1px solid #243b55;
+      border-radius: 14px;
+      padding: 25px;
+    }
+
+    .about p {
+      color: #b9c8da;
+      margin-top: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 22px;
+      border-top: 1px solid #20334d;
+      color: #91a5bd;
+      font-size: 13px;
+    }
+
+    @media (max-width: 800px) {
+      .map-layout {
+        grid-template-columns: 1fr;
+      }
+
+      #map {
+        height: 330px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="logo">SMART BLIND STICK</div>
+    <div class="tag">Assistive Technology Project</div>
+  </header>
+
+  <section class="hero">
+    <small>SMART MOBILITY SYSTEM</small>
+    <h1>Safety through<br><span class="blue">Smart Technology.</span></h1>
+    <p>
+      An intelligent walking stick concept designed to assist visually
+      impaired people through obstacle detection and GPS-based location
+      tracking.
+    </p>
+  </section>
+
+  <main>
+    <h2 class="section-title">GPS Monitoring Dashboard</h2>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-label">Connection Status</div>
+        <div class="card-value green" id="status">Demo Mode</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Latitude</div>
+        <div class="card-value blue" id="latitude">31.5204</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Longitude</div>
+        <div class="card-value blue" id="longitude">74.3587</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Last Update</div>
+        <div class="card-value" id="updated" style="font-size:17px">
+          Demo location
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title">Location Map</h2>
+
+    <div class="map-layout">
+      <div id="map"></div>
+
+      <div class="controls">
+        <h3>Location Controls</h3>
+        <p style="color:#a9bbd0;font-size:13px;margin-top:5px">
+          Enter coordinates to move the map marker.
+        </p>
+
+        <label for="latInput">Latitude</label>
+        <input id="latInput" type="number" step="any"
+               value="31.5204" min="-90" max="90">
+
+        <label for="lonInput">Longitude</label>
+        <input id="lonInput" type="number" step="any"
+               value="74.3587" min="-180" max="180">
+
+        <button id="showBtn">Show Location</button>
+        <button id="demoBtn" class="secondary">
+          Load Demo Location
+        </button>
+
+        <div class="notice">
+          <strong>Important:</strong> Demo mode is active.
+          This map is not yet connected to the physical GPS module.
+        </div>
+      </div>
+    </div>
+
+    <section class="about">
+      <h2>About the Project</h2>
+      <p>
+        The Smart Blind Stick is designed to improve mobility and
+        independence for visually impaired people.
+      </p>
+      <p>
+        <strong class="blue">Ultrasonic Sensor:</strong>
+        Detects obstacles in front of the stick.
+      </p>
+      <p>
+        <strong class="blue">GPS Module:</strong>
+        Provides geographical coordinates when properly connected.
+      </p>
+      <p>
+        <strong class="blue">ESP8266:</strong>
+        Provides Wi-Fi connectivity for sending data to an online dashboard.
+      </p>
+      <p>
+        <strong class="blue">ESP32-CAM:</strong>
+        Offers camera functionality for future visual assistance features.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    Smart Blind Stick | School Science & Technology Project
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const map = L.map("map").setView([31.5204, 74.3587], 13);
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    let marker = L.marker([31.5204, 74.3587])
+      .addTo(map)
+      .bindPopup("Demo Location: Lahore")
+      .openPopup();
+
+    function showLocation(lat, lon, isDemo) {
+      if (!Number.isFinite(lat) || !Number.isFinite(lon) ||
+          lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+        alert("Please enter valid latitude and longitude values.");
+        return;
+      }
+
+      map.setView([lat, lon], 15);
+      marker.setLatLng([lat, lon]);
+
+      marker.bindPopup(
+        isDemo ? "Demo Location" : "Selected Location"
+      ).openPopup();
+
+      document.getElementById("latitude").textContent = lat.toFixed(6);
+      document.getElementById("longitude").textContent = lon.toFixed(6);
+      document.getElementById("latInput").value = lat;
+      document.getElementById("lonInput").value = lon;
+
+      document.getElementById("status").textContent =
+        isDemo ? "Demo Mode" : "Manual Location";
+
+      document.getElementById("updated").textContent =
+        new Date().toLocaleTimeString();
+
+      setTimeout(() => map.invalidateSize(), 100);
+    }
+
+    document.getElementById("showBtn").addEventListener("click", () => {
+      const lat = Number(document.getElementById("latInput").value);
+      const lon = Number(document.getElementById("lonInput").value);
+      showLocation(lat, lon, false);
+    });
+
+    document.getElementById("demoBtn").addEventListener("click", () => {
+      showLocation(31.5204, 74.3587, true);
+    });
+
+    window.addEventListener("load", () => {
+      setTimeout(() => map.invalidateSize(), 300);
+    });
+  </script>
+</body>
+</html>
