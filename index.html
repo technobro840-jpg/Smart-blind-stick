@@ -1,82 +1,479 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Blind Stick | GPS Monitoring</title>
 
-<title>Smart Blind Stick | GPS Monitoring</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-<style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+        body {
+            background: #eef2f3;
+            color: #17202a;
+        }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #eef2f1;
-  color: #18231f;
-}
+        header {
+            background: linear-gradient(135deg, #092b2a, #12645d);
+            color: white;
+            padding: 22px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-/* NAVBAR */
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
 
-header {
-  height: 70px;
-  background: #10251e;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 6%;
-}
+        .status {
+            background: #d7f5e8;
+            color: #12645d;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 19px;
-  font-weight: 700;
-}
+        .hero {
+            background: linear-gradient(135deg, #0d3d3a, #18766d);
+            color: white;
+            padding: 65px 7%;
+        }
 
-.logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
-  background: #2ca66f;
-  display: grid;
-  place-items: center;
-  font-size: 20px;
-}
+        .hero h1 {
+            font-size: 42px;
+            max-width: 750px;
+            margin-bottom: 15px;
+        }
 
-.nav-status {
-  font-size: 13px;
-  color: #b9cec5;
-}
+        .hero p {
+            font-size: 17px;
+            max-width: 700px;
+            line-height: 1.7;
+            color: #d9eeee;
+        }
 
-.nav-status span {
-  color: #55d795;
-  margin-right: 6px;
-}
+        .container {
+            width: 86%;
+            max-width: 1200px;
+            margin: 35px auto;
+        }
 
-/* HERO */
+        .section-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #123c39;
+        }
 
-.hero {
-  background: linear-gradient(135deg, #10251e, #17382c);
-  color: white;
-  padding: 55px 6%;
-}
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 35px;
+        }
 
-.hero-content {
-  max-width: 900px;
-}
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+            border-left: 4px solid #159a82;
+        }
 
-.badge {
-  display: inline-block;
-  padding: 6px 11px;
-  border-radius: 20px;
-  background
+        .card h3 {
+            font-size: 15px;
+            color: #64716f;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 22px;
+            font-weight: bold;
+            color: #123c39;
+        }
+
+        .map-box {
+            background: white;
+            padding: 18px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+            margin-bottom: 35px;
+        }
+
+        #map {
+            height: 430px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .controls {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+            margin-bottom: 35px;
+        }
+
+        .inputs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        input {
+            padding: 13px;
+            border: 1px solid #ccd5d3;
+            border-radius: 8px;
+            outline: none;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        input:focus {
+            border-color: #159a82;
+        }
+
+        button {
+            padding: 13px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #159a82;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #107765;
+        }
+
+        .reset {
+            background: #34495e;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .feature {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+        }
+
+        .feature h3 {
+            color: #12645d;
+            margin-bottom: 10px;
+        }
+
+        .feature p {
+            color: #687573;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        footer {
+            background: #092b2a;
+            color: #c8d8d6;
+            text-align: center;
+            padding: 25px;
+            margin-top: 50px;
+        }
+
+        .notice {
+            background: #fff7dc;
+            border-left: 5px solid #e0aa22;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            color: #66500d;
+        }
+
+        @media (max-width: 900px) {
+            .cards,
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero h1 {
+                font-size: 34px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cards,
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .hero {
+                padding: 45px 7%;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Smart Blind Stick</div>
+    <div class="status">● GPS DEMO MODE</div>
+</header>
+
+<section class="hero">
+    <h1>Smart Blind Stick GPS Monitoring System</h1>
+    <p>
+        A smart assistive technology project designed to improve
+        mobility and safety through obstacle detection, GPS tracking,
+        wireless communication and camera monitoring.
+    </p>
+</section>
+
+<main class="container">
+
+    <div class="notice">
+        <strong>Demo Mode:</strong>
+        The GPS location shown on this website is currently a demonstration.
+        The physical GPS module is not connected to the website yet.
+    </div>
+
+    <h2 class="section-title">GPS Status</h2>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Connection</h3>
+            <p>Demo Mode</p>
+        </div>
+
+        <div class="card">
+            <h3>Latitude</h3>
+            <p id="latitude">31.520400</p>
+        </div>
+
+        <div class="card">
+            <h3>Longitude</h3>
+            <p id="longitude">74.358700</p>
+        </div>
+
+        <div class="card">
+            <h3>Last Update</h3>
+            <p id="time">--:--:--</p>
+        </div>
+
+    </div>
+
+    <h2 class="section-title">Live Location</h2>
+
+    <div class="map-box">
+        <div id="map"></div>
+    </div>
+
+    <h2 class="section-title">Location Controls</h2>
+
+    <div class="controls">
+
+        <div class="inputs">
+
+            <input
+                type="number"
+                step="any"
+                id="latInput"
+                placeholder="Enter Latitude"
+                value="31.520400"
+            >
+
+            <input
+                type="number"
+                step="any"
+                id="lngInput"
+                placeholder="Enter Longitude"
+                value="74.358700"
+            >
+
+            <button onclick="showLocation()">Show Location</button>
+
+            <button class="reset" onclick="resetLocation()">
+                Reset Demo Location
+            </button>
+
+        </div>
+
+    </div>
+
+    <h2 class="section-title">Project Features</h2>
+
+    <div class="features">
+
+        <div class="feature">
+            <h3>Obstacle Detection</h3>
+            <p>
+                Ultrasonic sensors detect nearby obstacles and help
+                provide safer movement for the user.
+            </p>
+        </div>
+
+        <div class="feature">
+            <h3>GPS Tracking</h3>
+            <p>
+                The NEO-6M GPS module can provide the user's
+                geographical location.
+            </p>
+        </div>
+
+        <div class="feature">
+            <h3>ESP8266 Wi-Fi</h3>
+            <p>
+                ESP8266 provides wireless communication for sending
+                information to online systems.
+            </p>
+        </div>
+
+        <div class="feature">
+            <h3>ESP32-CAM</h3>
+            <p>
+                The ESP32-CAM can provide camera-based monitoring
+                and visual information.
+            </p>
+        </div>
+
+    </div>
+
+</main>
+
+<footer>
+    Smart Blind Stick Project • GPS Monitoring System
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+    const defaultLat = 31.520400;
+    const defaultLng = 74.358700;
+
+    const map = L.map('map').setView(
+        [defaultLat, defaultLng],
+        13
+    );
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            attribution: '&copy; OpenStreetMap contributors'
+        }
+    ).addTo(map);
+
+    let marker = L.marker([
+        defaultLat,
+        defaultLng
+    ]).addTo(map);
+
+    marker.bindPopup(
+        "<b>Smart Blind Stick</b><br>Demo GPS Location"
+    ).openPopup();
+
+    function updateTime() {
+        const now = new Date();
+
+        document.getElementById("time").textContent =
+            now.toLocaleTimeString();
+    }
+
+    function showLocation() {
+
+        const lat = parseFloat(
+            document.getElementById("latInput").value
+        );
+
+        const lng = parseFloat(
+            document.getElementById("lngInput").value
+        );
+
+        if (
+            isNaN(lat) ||
+            isNaN(lng) ||
+            lat < -90 ||
+            lat > 90 ||
+            lng < -180 ||
+            lng > 180
+        ) {
+            alert("Please enter valid latitude and longitude.");
+            return;
+        }
+
+        document.getElementById("latitude").textContent =
+            lat.toFixed(6);
+
+        document.getElementById("longitude").textContent =
+            lng.toFixed(6);
+
+        marker.setLatLng([lat, lng]);
+
+        marker.bindPopup(
+            "<b>Smart Blind Stick</b><br>Selected Location"
+        ).openPopup();
+
+        map.setView([lat, lng], 15);
+
+        updateTime();
+    }
+
+    function resetLocation() {
+
+        document.getElementById("latInput").value =
+            defaultLat;
+
+        document.getElementById("lngInput").value =
+            defaultLng;
+
+        document.getElementById("latitude").textContent =
+            defaultLat.toFixed(6);
+
+        document.getElementById("longitude").textContent =
+            defaultLng.toFixed(6);
+
+        marker.setLatLng([
+            defaultLat,
+            defaultLng
+        ]);
+
+        marker.bindPopup(
+            "<b>Smart Blind Stick</b><br>Demo GPS Location"
+        ).openPopup();
+
+        map.setView([
+            defaultLat,
+            defaultLng
+        ], 13);
+
+        updateTime();
+    }
+
+    updateTime();
+
+</script>
+
+</body>
+</html>
